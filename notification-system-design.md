@@ -327,3 +327,50 @@ Optimization:
 - Create indexes on frequently queried columns.
 - Archive old notifications to reduce active table size.
 - Use prepared statements to improve execution and security.
+
+
+# Stage 4
+
+## Performance Improvements
+
+### 1. Database Indexing
+- Create indexes on `student_id`, `created_at`, and `is_read`.
+- Use composite indexes for frequently queried fields.
+
+### 2. Pagination
+- Fetch notifications in pages using `LIMIT` and `OFFSET`.
+- Prevent loading thousands of records in one request.
+
+### 3. Caching
+- Cache frequently accessed notifications using Redis.
+- Reduce repeated database queries.
+
+### 4. Asynchronous Processing
+- Use a message queue (RabbitMQ/Kafka) for sending notifications.
+- Prevent long response times during high traffic.
+
+### 5. Connection Pooling
+- Maintain a pool of database connections.
+- Reduce connection creation overhead.
+
+### 6. WebSockets
+- Deliver notifications instantly without client polling.
+- Reduce unnecessary HTTP requests.
+
+### 7. Load Balancing
+- Deploy multiple backend instances behind a load balancer.
+- Distribute incoming requests evenly.
+
+### 8. Monitoring
+- Monitor API latency and server health.
+- Log failures and response times for debugging.
+
+---
+
+## Expected Benefits
+
+- Faster notification delivery.
+- Lower database load.
+- Better scalability for thousands of concurrent users.
+- Improved user experience with real-time updates.
+
