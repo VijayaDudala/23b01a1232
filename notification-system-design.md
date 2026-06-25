@@ -253,3 +253,77 @@ ON notifications(student_id,is_read);
 - student_id → Fast retrieval of a student's notifications.
 - created_at → Faster sorting by latest notifications.
 - (student_id, is_read) → Optimized unread notification queries.
+
+
+# Stage 3
+
+## Query Optimization
+
+### 1. Retrieve latest notifications for a student
+
+```sql
+SELECT *
+FROM notifications
+WHERE student_id = ?
+ORDER BY created_at DESC
+LIMIT 20;
+```
+
+Optimization:
+- Uses `idx_student`.
+- Uses `idx_created`.
+- Returns only the latest 20 records.
+
+---
+
+### 2. Retrieve unread notifications
+
+```sql
+SELECT *
+FROM notifications
+WHERE student_id = ?
+AND is_read = FALSE;
+```
+
+Optimization:
+- Uses composite index `(student_id, is_read)`.
+- Avoids full table scan.
+
+---
+
+### 3. Mark notification as read
+
+```sql
+UPDATE notifications
+SET is_read = TRUE,
+    updated_at = CURRENT_TIMESTAMP
+WHERE id = ?;
+```
+
+Optimization:
+- Primary Key lookup.
+- O(log n) update using primary key index.
+
+---
+
+### 4. Delete notification
+
+```sql
+DELETE
+FROM notifications
+WHERE id = ?;
+```
+
+Optimization:
+- Uses Primary Key index.
+- Deletes only one record.
+
+---
+
+## Performance Improvements
+
+- Use pagination for large datasets.
+- Retrieve only required columns instead of `SELECT *`.
+- Create indexes on frequently queried columns.
+- Archive old notifications to reduce active table size.
+- Use prepared statements to improve execution and security.
