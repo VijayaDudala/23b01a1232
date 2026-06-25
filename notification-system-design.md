@@ -374,3 +374,62 @@ Optimization:
 - Better scalability for thousands of concurrent users.
 - Improved user experience with real-time updates.
 
+# Stage 5
+
+## Problems in Existing Code
+
+- Sequential processing is slow.
+- Failure of one email interrupts processing.
+- No retry mechanism.
+- DB save and email are tightly coupled.
+- No status tracking.
+- Difficult to scale to 50,000 students.
+
+## Improved Design
+
+- Add all notification jobs to a queue.
+- Save notification to DB first.
+- Retry email delivery up to 3 times.
+- Continue processing remaining students even if one fails.
+- Push notification is sent after successful DB save.
+- Track success and failure counts.
+
+## Why DB Save and Email Should Not Be Together?
+
+Saving to the database guarantees the notification is persisted.
+
+Email delivery depends on external services and can fail temporarily.
+
+Separating these operations improves reliability and scalability.
+
+## Revised Pseudocode
+
+notifyAll(studentIds, message)
+
+↓
+
+Add every student to Queue
+
+↓
+
+Worker picks one student
+
+↓
+
+Save Notification to DB
+
+↓
+
+Retry Email (3 attempts)
+
+↓
+
+Send Push Notification
+
+↓
+
+Update Status
+
+↓
+
+Process Next Student
