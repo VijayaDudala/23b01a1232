@@ -192,3 +192,64 @@ Benefits
 - Reduced polling
 - Better user experience
 - Lower server load
+
+
+
+# Stage 2
+
+## Database Design
+
+### notifications
+
+| Column | Type | Description |
+|---------|------|-------------|
+| id | UUID | Primary Key |
+| student_id | INT | Student ID |
+| notification_type | VARCHAR(50) | Placement / Exam / Event |
+| title | VARCHAR(255) | Notification Title |
+| message | TEXT | Notification Content |
+| priority | VARCHAR(20) | HIGH / MEDIUM / LOW |
+| is_read | BOOLEAN | Read Status |
+| created_at | TIMESTAMP | Created Time |
+| updated_at | TIMESTAMP | Updated Time |
+
+---
+
+## SQL Schema
+
+```sql
+CREATE TABLE notifications (
+    id UUID PRIMARY KEY,
+    student_id INT NOT NULL,
+    notification_type VARCHAR(50) NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    priority VARCHAR(20) NOT NULL,
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+---
+
+## Recommended Indexes
+
+```sql
+CREATE INDEX idx_student
+ON notifications(student_id);
+
+CREATE INDEX idx_created
+ON notifications(created_at DESC);
+
+CREATE INDEX idx_unread
+ON notifications(student_id,is_read);
+```
+
+---
+
+## Why these indexes?
+
+- student_id → Fast retrieval of a student's notifications.
+- created_at → Faster sorting by latest notifications.
+- (student_id, is_read) → Optimized unread notification queries.
